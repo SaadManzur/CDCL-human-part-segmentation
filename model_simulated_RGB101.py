@@ -19,8 +19,8 @@ from keras.utils.data_utils import get_file
 from keras.applications.imagenet_utils import decode_predictions
 from keras.applications.imagenet_utils import preprocess_input
 # from keras.applications.imagenet_utils import _obtain_input_shape
-from keras.engine.topology import get_source_inputs
-from keras.engine import Layer, InputSpec
+from keras.utils.layer_utils import get_source_inputs
+from keras.layers import Layer, InputSpec
 from keras import initializers
 from keras.layers import add
 
@@ -79,7 +79,7 @@ class Scale(Layer):
 
         self.gamma = K.variable(self.gamma_init(shape), name='%s_gamma'%self.name)
         self.beta = K.variable(self.beta_init(shape), name='%s_beta'%self.name)
-        self.trainable_weights = [self.gamma, self.beta]
+        self._trainable_weights = [self.gamma, self.beta]
 
         if self.initial_weights is not None:
             self.set_weights(self.initial_weights)
@@ -147,7 +147,7 @@ def identity_block(input_tensor, kernel_size, filters, stage, block):
     """
     eps = 1.1e-5
     
-    if K.image_dim_ordering() == 'tf':
+    if K.image_data_format() == 'channels_last':
         bn_axis = 3
     else:
         bn_axis = 1
@@ -193,7 +193,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2))
     """
     eps = 1.1e-5
     
-    if K.image_dim_ordering() == 'tf':
+    if K.image_data_format() == 'channels_last':
         bn_axis = 3
     else:
         bn_axis = 1
